@@ -42,6 +42,7 @@ EXTRA
 */
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class WordCounter {
     final String[] input = {"java", "spring", "java", "linux", "java", "sql", "linux"};
@@ -59,12 +60,26 @@ public class WordCounter {
 
     }
     public void solveExtra(){
-        Map<String, Integer> result = new HashMap<>();
+        Map<String, Long> result = Arrays.stream(input).toList().stream()
+                .collect(Collectors.groupingBy(
+                        word -> word,
+                        Collectors.counting()
+                ));
 
+        result.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(entry ->
+                        System.out.println(entry.getKey() + " -> " + entry.getValue())
+                );
+
+        Optional<Map.Entry<String, Long>> mostFrequent = result.entrySet().stream()
+                .max(Map.Entry.comparingByValue());
+
+        mostFrequent.ifPresent(entry -> System.out.println("most frequent word: " + entry.getKey() + " -> " + entry.getValue()));
     }
 
     public static void main(String[] args) {
         WordCounter wordCounter = new WordCounter();
-        wordCounter.solve();
+        wordCounter.solveExtra();
     }
 }
