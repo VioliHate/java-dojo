@@ -51,30 +51,30 @@ EXTRA
 import java.util.*;
 import java.util.stream.Collectors;
 
-class Employee {
-
-    private final Long id;
-    private final String name;
-    private final String department;
-
-    public Employee(Long id, String name, String department) {
-        this.id = id;
-        this.name = name;
-        this.department = department;
-    }
-
-    public Long getId() { return id; }
-    public String getName() { return name; }
-    public String getDepartment() { return department; }
-
-    @Override
-    public String toString() {
-        return name;
-    }
-}
 
 public class E02_EmployeeDirectory {
 
+    static class Employee {
+
+        private final Long id;
+        private final String name;
+        private final String department;
+
+        public Employee(Long id, String name, String department) {
+            this.id = id;
+            this.name = name;
+            this.department = department;
+        }
+
+        public Long getId() { return id; }
+        public String getName() { return name; }
+        public String getDepartment() { return department; }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
 
 
     List<Employee> employees = List.of(new Employee(1L, "Mario", "IT"),
