@@ -44,7 +44,7 @@ EXTRA
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class WordCounter {
+public class E01_WordCounter {
     final String[] input = {"java", "spring", "java", "linux", "java", "sql", "linux"};
 
     public void solve(){
@@ -79,7 +79,7 @@ public class WordCounter {
     }
 
     public static void main(String[] args) {
-        WordCounter wordCounter = new WordCounter();
+        E01_WordCounter wordCounter = new E01_WordCounter();
         wordCounter.solveExtra();
     }
 }
