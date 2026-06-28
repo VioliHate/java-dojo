@@ -48,15 +48,41 @@ EXTRA
 - Print the department containing the highest number of employees.
 */
 
+import java.util.List;
+
 class Employee {
 
     Long id;
     String name;
     String department;
 
+   public Employee(Long id, String name, String department) {
+       this.id = id;
+       this.name = name;
+       this.department = department;
+    }
 }
 
 public class E02_EmployeeDirectory {
 
-    public static void main(String[] args) {}
+    List<Employee> employees = List.of(new Employee(1L, "Mario", "IT"),
+            new Employee(2L, "Anna", "HR"), new Employee(3L,"Luca", "IT"),
+            new Employee(4L, "Paolo", "HR"), new Employee(5L,"Andrea", "IT"),
+            new Employee(6L, "Anna", "CTO"), new Employee(7L,"Luca", "PM"),
+            new Employee(8L, "Luigi", "PM"), new Employee(9L,"Aziz", "IT"),
+            new Employee(10L, "Francis", "CEO"), new Employee(11L,"Gloria", "CIO"));
+
+    public void solve(){
+
+    }
+
+    public void solveExtra(){
+
+    }
+
+
+    public static void main(String[] args) {
+        E02_EmployeeDirectory EmployeeDirectory = new E02_EmployeeDirectory();
+        EmployeeDirectory.solve();
+    }
 }
