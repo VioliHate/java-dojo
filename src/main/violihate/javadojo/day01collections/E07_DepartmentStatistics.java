@@ -68,10 +68,6 @@ public class E07_DepartmentStatistics {
         this.salary = salary;
     }
 
-        public Long getId() {
-            return id;
-        }
-
         public String getName() {
             return name;
         }
@@ -96,93 +92,48 @@ public class E07_DepartmentStatistics {
         private double avgSalary;
         private double highestSalary;
         private double lowestSalary;
+        private final Employee highestPaidEmployee;   // EXTRA
 
-        DepartmentStatistics(){
-            this.departmentName = "";
-            this.employeeCount = 0;
-            this.avgSalary = 0.0;
-            this.highestSalary = 0.0;
-            this.lowestSalary = 0.0;
-        }
-
-        public String getDepartmentName() {
-            return departmentName;
-        }
-
-        public void setDepartmentName(String departmentName) {
+        DepartmentStatistics(String departmentName, List<Employee> deptEmployees){
             this.departmentName = departmentName;
-        }
+            this.employeeCount = deptEmployees.size();
 
-        public int getEmployeeCount() {
-            return employeeCount;
-        }
+            this.avgSalary = deptEmployees.stream()
+                    .mapToDouble(Employee::getSalary)
+                    .average()
+                    .orElse(0.0);
 
-        public void setEmployeeCount(int employeeCount) {
-            this.employeeCount = employeeCount;
+            this.highestSalary = deptEmployees.stream()
+                    .mapToDouble(Employee::getSalary)
+                    .max()
+                    .orElse(0.0);
+
+            this.lowestSalary = deptEmployees.stream()
+                    .mapToDouble(Employee::getSalary)
+                    .min()
+                    .orElse(0.0);
+
+            this.highestPaidEmployee = deptEmployees.stream()
+                    .max(Comparator.comparingDouble(Employee::getSalary))
+                    .orElse(null);
         }
 
         public double getAvgSalary() {
             return avgSalary;
         }
 
-        public void setAvgSalary(double avgSalary) {
-            this.avgSalary = avgSalary;
-        }
-
-        public double getHighestSalary() {
-            return highestSalary;
-        }
-
-        public void setHighestSalary(double highestSalary) {
-            this.highestSalary = highestSalary;
-        }
-
-        public double getLowestSalary() {
-            return lowestSalary;
-        }
-
-        public void setLowestSalary(double lowestSalary) {
-            this.lowestSalary = lowestSalary;
-        }
-
         @Override
         public String toString() {
-            return "Department: " + this.departmentName + "\n" +
-                    "Employees: " + this.employeeCount + "\n" +
-                    "Average Salary:" +  this.avgSalary + "\n" +
-                    "Highest Salary:" +  this.highestSalary + "\n" +
-                    "Lowest Salary:" +  this.lowestSalary;
-        }
-
-        public void calculateAverageSalary(List<Employee> employees, String departmentName) {
-           this.avgSalary = employees.stream().filter(employee -> employee.department.equals(departmentName)).mapToDouble(Employee::getSalary).sum() / employees.size() ;
-        }
-        public void calculateHighestSalary(List<Employee> employees, String departmentName) {
-            this.highestSalary = employees.stream().filter(employee -> employee.department.equals(departmentName)).max(Comparator.comparingDouble(Employee::getSalary)).get().getSalary();
-        }
-        public void calculateLowestSalary(List<Employee> employees, String departmentName) {
-            this.lowestSalary = employees.stream().filter(employee -> employee.department.equals(departmentName)).min(Comparator.comparingDouble(Employee::getSalary)).get().getSalary();
-
-        }
-        public void countEmployees(List<Employee> employees, String departmentName) {
-            this.employeeCount = Math.toIntExact(employees.stream().filter(employee -> employee.department.equals(departmentName)).count());
-        }
-
-        public void calculateStatistics(List<Employee> employees, String departmentName) {
-            this.departmentName = departmentName;
-            this.countEmployees(employees, departmentName);
-            this.calculateAverageSalary(employees, departmentName);
-            this.calculateHighestSalary(employees, departmentName);
-            this.calculateLowestSalary(employees, departmentName);
-            System.out.println(this);
-        }
-        Set<String> getDepartmentFromListEmployees(List<Employee> employees) {
-            return employees.stream().map(Employee::getDepartment).collect(Collectors.toSet());
+            return "Department: " + departmentName + "\n" +
+                    "Employees: " + employeeCount + "\n" +
+                    "Average Salary: " + String.format("%.2f", avgSalary) + "\n" +
+                    "Highest Salary: " + String.format("%.2f", highestSalary) +
+                    " (" + (highestPaidEmployee != null ? highestPaidEmployee.getName() : "N/A") + ")\n" +
+                    "Lowest Salary: " + String.format("%.2f", lowestSalary);
         }
     }
 
     public static void main(String[] args) {
-        DepartmentStatistics departmentStatistics = new DepartmentStatistics();
         List<Employee> employees = new ArrayList<>(List.of(
          new Employee(1L, "Alessandro Rossi", "IT", 3200.00),
          new Employee(2L, "Giulia Bianchi", "HR", 2800.00),
@@ -209,9 +160,19 @@ public class E07_DepartmentStatistics {
          new Employee(23L, "Riccardo Santoro", "HR", 2650.00),
          new Employee(24L, "Silvia Mariani", "Sales", 3050.00),
          new Employee(25L, "Federico Serra", "IT", 4500.00)));
-        System.out.println("=========DEPARTMENT STATS===============");
-        for(String departmentName : departmentStatistics.getDepartmentFromListEmployees(employees)) {
-            departmentStatistics.calculateStatistics(employees, departmentName);
+
+        Map<String, List<Employee>> grouped = employees.stream()
+                .collect(Collectors.groupingBy(Employee::getDepartment));
+
+        List<DepartmentStatistics> statsList = grouped.entrySet().stream()
+                .map(entry -> new DepartmentStatistics(entry.getKey(), entry.getValue()))
+                .sorted(Comparator.comparingDouble(DepartmentStatistics::getAvgSalary).reversed())
+                .toList();
+
+        System.out.println("=========DEPARTMENT STATS===============\n");
+
+        for (DepartmentStatistics stats : statsList) {
+            System.out.println(stats);
             System.out.println("========================");
         }
     }
